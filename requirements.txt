@@ -1,0 +1,7 @@
+openai
+requests
+jinja2
+matplotlib
+pillow
+python-dotenv
+premailer
