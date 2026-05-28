@@ -98,6 +98,7 @@ NEWSLETTER_RECIPIENTS=you@gmail.com
 NEWSLETTER_ISSUE_NUMBER=1
 OPENROUTER_RESEARCH_MODELS=deepseek/deepseek-v4-flash:free,openrouter/auto,google/gemini-2.5-flash
 OPENROUTER_CONTENT_MODELS=deepseek/deepseek-v4-flash:free,openrouter/auto,google/gemini-2.5-flash
+OPENROUTER_RATE_LIMIT_WAIT_SECONDS=30
 ```
 
 ### Run
@@ -125,6 +126,7 @@ Fork this repo and add your keys as [GitHub Secrets](https://docs.github.com/en/
 | `NEWSLETTER_ISSUE_NUMBER` | Starting issue number |
 | `OPENROUTER_RESEARCH_MODELS` | Optional comma-separated model fallbacks for research step |
 | `OPENROUTER_CONTENT_MODELS` | Optional comma-separated model fallbacks for content step |
+| `OPENROUTER_RATE_LIMIT_WAIT_SECONDS` | Optional base backoff delay in seconds for 429 retries |
 
 Once set, the newsletter runs automatically every day. To trigger manually: **Actions → Daily AI Newsletter → Run workflow**.
 

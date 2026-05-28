@@ -20,6 +20,7 @@ load_dotenv()
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 TMP_DIR = Path(__file__).parent.parent / ".tmp"
 MAX_RETRIES_PER_MODEL = 3
+BASE_RATE_LIMIT_WAIT_SECONDS = int(os.getenv("OPENROUTER_RATE_LIMIT_WAIT_SECONDS", "30"))
 
 
 def _research_models() -> list[str]:
@@ -135,9 +136,9 @@ Return a JSON object with exactly these keys:
             except RateLimitError as exc:
                 last_error = exc
                 if attempt == MAX_RETRIES_PER_MODEL - 1:
-                    print(f"[research] Model rate-limited after retries: {model} — trying fallback model...")
+                    print(f"[research] Exhausted retries for {model} — moving to next model...")
                     break
-                wait = 15 * (attempt + 1)
+                wait = BASE_RATE_LIMIT_WAIT_SECONDS * (attempt + 1)
                 print(f"[research] Rate limited on {model} — retrying in {wait}s (attempt {attempt+1}/{MAX_RETRIES_PER_MODEL})...")
                 time.sleep(wait)
             except Exception as exc:
