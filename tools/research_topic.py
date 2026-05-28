@@ -149,7 +149,12 @@ Return a JSON object with exactly these keys:
         if model_succeeded:
             break
     else:
-        raise RuntimeError(f"All research models failed: {models}. Last error: {last_error}") from last_error
+        raise RuntimeError(
+            f"All {len(models)} research models failed. Last error: {last_error}"
+        ) from last_error
+
+    if raw is None:
+        raise RuntimeError("Research response was empty after model execution.")
 
     # Strip markdown code fences if model adds them despite instructions
     if raw.startswith("```"):

@@ -146,7 +146,12 @@ Return a JSON object with EXACTLY these keys:
         if model_succeeded:
             break
     else:
-        raise RuntimeError(f"All content models failed: {models}. Last error: {last_error}") from last_error
+        raise RuntimeError(
+            f"All {len(models)} content models failed. Last error: {last_error}"
+        ) from last_error
+
+    if raw is None:
+        raise RuntimeError("Content response was empty after model execution.")
 
     if raw.startswith("```"):
         raw = raw.split("```")[1]
