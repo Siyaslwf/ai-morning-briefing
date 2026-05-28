@@ -19,7 +19,7 @@ load_dotenv()
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 TMP_DIR = Path(__file__).parent.parent / ".tmp"
-MAX_RETRIES_PER_MODEL = 3
+MAX_RETRIES_PER_MODEL = int(os.getenv("OPENROUTER_MAX_RETRIES_PER_MODEL", "3"))
 BASE_RATE_LIMIT_WAIT_SECONDS = int(os.getenv("OPENROUTER_RATE_LIMIT_WAIT_SECONDS", "30"))
 
 
@@ -149,7 +149,7 @@ Return a JSON object with exactly these keys:
         if model_succeeded:
             break
     else:
-        raise RuntimeError(f"All research models failed: {models}") from last_error
+        raise RuntimeError(f"All research models failed: {models}. Last error: {last_error}") from last_error
 
     # Strip markdown code fences if model adds them despite instructions
     if raw.startswith("```"):

@@ -16,7 +16,7 @@ from openai import OpenAI, RateLimitError
 load_dotenv()
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-MAX_RETRIES_PER_MODEL = 3
+MAX_RETRIES_PER_MODEL = int(os.getenv("OPENROUTER_MAX_RETRIES_PER_MODEL", "3"))
 BASE_RATE_LIMIT_WAIT_SECONDS = int(os.getenv("OPENROUTER_RATE_LIMIT_WAIT_SECONDS", "30"))
 
 
@@ -146,7 +146,7 @@ Return a JSON object with EXACTLY these keys:
         if model_succeeded:
             break
     else:
-        raise RuntimeError(f"All content models failed: {models}") from last_error
+        raise RuntimeError(f"All content models failed: {models}. Last error: {last_error}") from last_error
 
     if raw.startswith("```"):
         raw = raw.split("```")[1]
