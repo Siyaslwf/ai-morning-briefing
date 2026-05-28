@@ -113,6 +113,7 @@ Return a JSON object with exactly these keys:
   "cta": "Ask readers to reply with how they are using this AI in their work or business"
 }}"""
 
+    raw = None
     last_error = None
     for model in _research_models():
         for attempt in range(3):
@@ -134,7 +135,7 @@ Return a JSON object with exactly these keys:
                     print(f"[research] Model rate-limited after retries: {model} — trying fallback model...")
                     continue
                 wait = 15 * (attempt + 1)
-                print(f"[research] Rate limited on {model} — retrying in {wait}s (attempt {attempt+1}/2)...")
+                print(f"[research] Rate limited on {model} — retrying in {wait}s (attempt {attempt+1}/3)...")
                 time.sleep(wait)
             except Exception as exc:
                 last_error = exc
@@ -142,7 +143,7 @@ Return a JSON object with exactly these keys:
                 break
         else:
             continue
-        if "raw" in locals():
+        if raw is not None:
             break
     else:
         raise RuntimeError(f"All research models failed: {_research_models()}") from last_error

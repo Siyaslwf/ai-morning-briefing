@@ -110,6 +110,7 @@ Return a JSON object with EXACTLY these keys:
   "preview_text": "Preview text (max 90 chars) — complements the subject"
 }}"""
 
+    raw = None
     last_error = None
     for model in _content_models():
         for attempt in range(3):
@@ -131,7 +132,7 @@ Return a JSON object with EXACTLY these keys:
                     print(f"[content] Model rate-limited after retries: {model} — trying fallback model...")
                     continue
                 wait = 15 * (attempt + 1)
-                print(f"[content] Rate limited on {model} — retrying in {wait}s (attempt {attempt+1}/2)...")
+                print(f"[content] Rate limited on {model} — retrying in {wait}s (attempt {attempt+1}/3)...")
                 time.sleep(wait)
             except Exception as exc:
                 last_error = exc
@@ -139,7 +140,7 @@ Return a JSON object with EXACTLY these keys:
                 break
         else:
             continue
-        if "raw" in locals():
+        if raw is not None:
             break
     else:
         raise RuntimeError(f"All content models failed: {_content_models()}") from last_error
