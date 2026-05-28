@@ -19,6 +19,7 @@ load_dotenv()
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 TMP_DIR = Path(__file__).parent.parent / ".tmp"
+MAX_RETRIES_PER_MODEL = 3
 
 
 def _research_models() -> list[str]:
@@ -116,7 +117,8 @@ Return a JSON object with exactly these keys:
     raw = None
     last_error = None
     for model in _research_models():
-        for attempt in range(3):
+        model_succeeded = False
+        for attempt in range(MAX_RETRIES_PER_MODEL):
             try:
                 response = client.chat.completions.create(
                     model=model,
@@ -128,22 +130,21 @@ Return a JSON object with exactly these keys:
                 )
                 print(f"[research] Model used: {model}")
                 raw = response.choices[0].message.content.strip()
+                model_succeeded = True
                 break
             except RateLimitError as exc:
                 last_error = exc
-                if attempt == 2:
+                if attempt == MAX_RETRIES_PER_MODEL - 1:
                     print(f"[research] Model rate-limited after retries: {model} — trying fallback model...")
                     continue
                 wait = 15 * (attempt + 1)
-                print(f"[research] Rate limited on {model} — retrying in {wait}s (attempt {attempt+1}/3)...")
+                print(f"[research] Rate limited on {model} — retrying in {wait}s (attempt {attempt+1}/{MAX_RETRIES_PER_MODEL})...")
                 time.sleep(wait)
             except Exception as exc:
                 last_error = exc
                 print(f"[research] Model failed: {model} — {exc} — trying fallback model...")
                 break
-        else:
-            continue
-        if raw is not None:
+        if model_succeeded and raw is not None:
             break
     else:
         raise RuntimeError(f"All research models failed: {_research_models()}") from last_error
