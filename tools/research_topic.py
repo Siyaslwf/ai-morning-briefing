@@ -21,6 +21,14 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 TMP_DIR = Path(__file__).parent.parent / ".tmp"
 
 
+def _research_models() -> list[str]:
+    configured = os.getenv(
+        "OPENROUTER_RESEARCH_MODELS",
+        "deepseek/deepseek-v4-flash:free,openrouter/auto,google/gemini-2.5-flash",
+    )
+    return [m.strip() for m in configured.split(",") if m.strip()]
+
+
 def research_topic(topic: str) -> dict:
     if not OPENROUTER_API_KEY:
         raise ValueError("OPENROUTER_API_KEY not set in .env")
@@ -105,25 +113,39 @@ Return a JSON object with exactly these keys:
   "cta": "Ask readers to reply with how they are using this AI in their work or business"
 }}"""
 
-    for attempt in range(4):
-        try:
-            response = client.chat.completions.create(
-                model="deepseek/deepseek-v4-flash:free",
-                messages=[
-                    {"role": "system", "content": system_instruction},
-                    {"role": "user", "content": user_prompt},
-                ],
-                temperature=0.2,
-            )
+    last_error = None
+    for model in _research_models():
+        for attempt in range(3):
+            try:
+                response = client.chat.completions.create(
+                    model=model,
+                    messages=[
+                        {"role": "system", "content": system_instruction},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=0.2,
+                )
+                print(f"[research] Model used: {model}")
+                raw = response.choices[0].message.content.strip()
+                break
+            except RateLimitError as exc:
+                last_error = exc
+                if attempt == 2:
+                    print(f"[research] Model rate-limited after retries: {model} — trying fallback model...")
+                    continue
+                wait = 15 * (attempt + 1)
+                print(f"[research] Rate limited on {model} — retrying in {wait}s (attempt {attempt+1}/2)...")
+                time.sleep(wait)
+            except Exception as exc:
+                last_error = exc
+                print(f"[research] Model failed: {model} — {exc} — trying fallback model...")
+                break
+        else:
+            continue
+        if "raw" in locals():
             break
-        except RateLimitError:
-            if attempt == 3:
-                raise
-            wait = 30 * (attempt + 1)
-            print(f"[research] Rate limited — retrying in {wait}s (attempt {attempt+1}/3)...")
-            time.sleep(wait)
-
-    raw = response.choices[0].message.content.strip()
+    else:
+        raise RuntimeError(f"All research models failed: {_research_models()}") from last_error
 
     # Strip markdown code fences if model adds them despite instructions
     if raw.startswith("```"):

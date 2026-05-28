@@ -96,6 +96,8 @@ GMAIL_ADDRESS=you@gmail.com
 GMAIL_APP_PASSWORD=xxxx xxxx xxxx xxxx
 NEWSLETTER_RECIPIENTS=you@gmail.com
 NEWSLETTER_ISSUE_NUMBER=1
+OPENROUTER_RESEARCH_MODELS=deepseek/deepseek-v4-flash:free,openrouter/auto,google/gemini-2.5-flash
+OPENROUTER_CONTENT_MODELS=deepseek/deepseek-v4-flash:free,openrouter/auto,google/gemini-2.5-flash
 ```
 
 ### Run
@@ -121,6 +123,8 @@ Fork this repo and add your keys as [GitHub Secrets](https://docs.github.com/en/
 | `GMAIL_APP_PASSWORD` | Gmail App Password (not your account password) |
 | `NEWSLETTER_RECIPIENTS` | Comma-separated recipient emails |
 | `NEWSLETTER_ISSUE_NUMBER` | Starting issue number |
+| `OPENROUTER_RESEARCH_MODELS` | Optional comma-separated model fallbacks for research step |
+| `OPENROUTER_CONTENT_MODELS` | Optional comma-separated model fallbacks for content step |
 
 Once set, the newsletter runs automatically every day. To trigger manually: **Actions → Daily AI Newsletter → Run workflow**.
 

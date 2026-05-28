@@ -18,6 +18,14 @@ load_dotenv()
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 
+def _content_models() -> list[str]:
+    configured = os.getenv(
+        "OPENROUTER_CONTENT_MODELS",
+        "deepseek/deepseek-v4-flash:free,openrouter/auto,google/gemini-2.5-flash",
+    )
+    return [m.strip() for m in configured.split(",") if m.strip()]
+
+
 def generate_content(research: dict, issue_number: int, date: str | None = None) -> dict:
     if not OPENROUTER_API_KEY:
         raise ValueError("OPENROUTER_API_KEY not set in .env")
@@ -102,25 +110,40 @@ Return a JSON object with EXACTLY these keys:
   "preview_text": "Preview text (max 90 chars) — complements the subject"
 }}"""
 
-    for attempt in range(4):
-        try:
-            response = client.chat.completions.create(
-                model="deepseek/deepseek-v4-flash:free",
-                messages=[
-                    {"role": "system", "content": system_instruction},
-                    {"role": "user", "content": prompt},
-                ],
-                temperature=0.7,
-            )
+    last_error = None
+    for model in _content_models():
+        for attempt in range(3):
+            try:
+                response = client.chat.completions.create(
+                    model=model,
+                    messages=[
+                        {"role": "system", "content": system_instruction},
+                        {"role": "user", "content": prompt},
+                    ],
+                    temperature=0.7,
+                )
+                print(f"[content] Model used: {model}")
+                raw = response.choices[0].message.content.strip()
+                break
+            except RateLimitError as exc:
+                last_error = exc
+                if attempt == 2:
+                    print(f"[content] Model rate-limited after retries: {model} — trying fallback model...")
+                    continue
+                wait = 15 * (attempt + 1)
+                print(f"[content] Rate limited on {model} — retrying in {wait}s (attempt {attempt+1}/2)...")
+                time.sleep(wait)
+            except Exception as exc:
+                last_error = exc
+                print(f"[content] Model failed: {model} — {exc} — trying fallback model...")
+                break
+        else:
+            continue
+        if "raw" in locals():
             break
-        except RateLimitError:
-            if attempt == 3:
-                raise
-            wait = 30 * (attempt + 1)
-            print(f"[content] Rate limited — retrying in {wait}s (attempt {attempt+1}/3)...")
-            time.sleep(wait)
+    else:
+        raise RuntimeError(f"All content models failed: {_content_models()}") from last_error
 
-    raw = response.choices[0].message.content.strip()
     if raw.startswith("```"):
         raw = raw.split("```")[1]
         if raw.startswith("json"):
