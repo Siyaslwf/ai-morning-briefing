@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The 90-Day Execution Plan — AI Morning Briefing</title>
+<style>
+  @page { size: A4; margin: 20mm 18mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color: #1e293b;
+    line-height: 1.6;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 40px 30px;
+    background: #f8fafc;
+  }
+  .cover {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #6366f1 100%);
+    color: white;
+    padding: 80px 60px;
+    border-radius: 16px;
+    margin-bottom: 50px;
+    text-align: center;
+    page-break-after: always;
+  }
+  .cover .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    padding: 6px 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+  .cover h1 {
+    font-size: 56px;
+    margin: 0 0 20px 0;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+  .cover h2 {
+    font-size: 24px;
+    font-weight: 400;
+    margin: 0 0 50px 0;
+    opacity: 0.85;
+    border: none;
+    padding: 0;
+  }
+  .cover .meta {
+    display: inline-block;
+    text-align: left;
+    background: rgba(0,0,0,0.25);
+    padding: 24px 32px;
+    border-radius: 12px;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 14px;
+  }
+  .cover .meta strong { color: #a5b4fc; }
+
+  h1, h2, h3, h4 {
+    color: #0f172a;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  h1.section {
+    font-size: 32px;
+    border-bottom: 4px solid #6366f1;
+    padding-bottom: 12px;
+    margin-top: 60px;
+    margin-bottom: 30px;
+    page-break-before: always;
+  }
+  h2 {
+    font-size: 24px;
+    color: #1e3a8a;
+    border-left: 5px solid #6366f1;
+    padding-left: 14px;
+    margin-top: 40px;
+  }
+  h3 {
+    font-size: 18px;
+    color: #334155;
+    margin-top: 30px;
+  }
+  h4 {
+    font-size: 15px;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 24px;
+  }
+
+  p { margin: 12px 0; }
+
+  .intro {
+    background: white;
+    border-left: 6px solid #10b981;
+    padding: 24px 32px;
+    border-radius: 8px;
+    margin: 30px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  }
+  .intro strong { color: #047857; }
+
+  ul, ol { padding-left: 24px; }
+  li { margin: 8px 0; }
+
+  .checkbox-list { list-style: none; padding-left: 0; }
+  .checkbox-list li {
+    padding: 8px 0 8px 30px;
+    position: relative;
+  }
+  .checkbox-list li::before {
+    content: "☐";
+    position: absolute;
+    left: 0;
+    font-size: 18px;
+    color: #6366f1;
+    font-weight: bold;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  th {
+    background: #1e3a8a;
+    color: white;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) { background: #f8fafc; }
+
+  code, pre {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    background: #f1f5f9;
+    color: #1e293b;
+    border-radius: 4px;
+  }
+  code { padding: 2px 6px; font-size: 13px; }
+  pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 20px 24px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 16px 0;
+  }
+  pre code { background: transparent; color: inherit; padding: 0; }
+
+  blockquote {
+    border-left: 4px solid #6366f1;
+    padding: 12px 20px;
+    background: #eef2ff;
+    margin: 16px 0;
+    color: #4338ca;
+    font-style: italic;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 20px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+  }
+  .card.success { border-left: 5px solid #10b981; }
+  .card.warning { border-left: 5px solid #f59e0b; }
+  .card.danger  { border-left: 5px solid #ef4444; }
+  .card.info    { border-left: 5px solid #3b82f6; }
+
+  .pill {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .pill.green  { background: #d1fae5; color: #047857; }
+  .pill.red    { background: #fee2e2; color: #b91c1c; }
+  .pill.blue   { background: #dbeafe; color: #1e40af; }
+  .pill.purple { background: #ede9fe; color: #6d28d9; }
+
+  hr {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #cbd5e1, transparent);
+    margin: 40px 0;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 80px;
+    padding: 40px 30px;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    border-radius: 12px;
+  }
+  .footer h2 {
+    color: white;
+    border: none;
+    padding: 0;
+    font-size: 28px;
+  }
+  .footer p { font-size: 16px; opacity: 0.85; }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .cover { page-break-after: always; }
+    h1.section { page-break-before: always; }
+    .card, table { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="badge">Personal Execution Plan</div>
+  <h1>The 90-Day Plan</h1>
+  <h2>From GitHub Repo → Audience → Income</h2>
+  <div class="meta">
+    <div><strong>Owner:</strong> Siyas Mohammed CK</div>
+    <div><strong>Project:</strong> AI Morning Briefing</div>
+    <div><strong>Start date:</strong> 2026-05-27</div>
+    <div><strong>Goal:</strong> Real audience, real skills, real income in 90 days</div>
+  </div>
+</div>
+
+<div class="intro">
+  <strong>How to use this document:</strong> Each section has a deadline and a success metric.
+  Tick the boxes as you go. If you fall behind, push everything forward — don't skip steps.
+  The goal is not perfection. The goal is <strong>shipping</strong>.
+</div>
+
+<h1 class="section">Weekend 1 — Foundation</h1>
+<p><span class="pill purple">May 30–31</span> &nbsp; Prove the system runs. Set up the platforms that will host your future audience and income.</p>
+
+<h2>Saturday — Make It Bulletproof <small>(4 hours)</small></h2>
+
+<div class="card info">
+  <h3>Block 1 — Validate the automation <em>(1 hour)</em></h3>
+  <ul class="checkbox-list">
+    <li>Trigger the GitHub Action manually: Repo → Actions → Daily AI Newsletter → Run workflow</li>
+    <li>Confirm the email arrives in your inbox</li>
+    <li>Forward it to 3 friends and ask: "Be honest — would you subscribe?"</li>
+    <li>Note their feedback in a notebook</li>
+  </ul>
+  <p><span class="pill green">Success</span> At least 1 friend says "yes, I'd actually read this every day."</p>
+</div>
+
+<div class="card info">
+  <h3>Block 2 — Polish the newsletter content <em>(1 hour)</em></h3>
+  <ul class="checkbox-list">
+    <li>Run the newsletter with 3 different topics: "AI agent frameworks in 2026", "Open source LLMs this week", "AI tools for productivity"</li>
+    <li>Pick the best-looking one</li>
+    <li>Take a high-quality screenshot in Gmail (laptop view, not mobile)</li>
+    <li>Save it as <code>marketing/hero-screenshot.png</code></li>
+  </ul>
+  <p><span class="pill green">Success</span> One screenshot you'd proudly show on LinkedIn.</p>
+</div>
+
+<div class="card info">
+  <h3>Block 3 — Set up a custom domain <em>(1 hour)</em></h3>
+  <ul class="checkbox-list">
+    <li>Buy <code>aimorningbriefing.com</code> or <code>morningbrief.ai</code> on Namecheap (~$10/year)</li>
+    <li>Alternatives if taken: <code>dailyai.email</code>, <code>briefme.ai</code>, <code>aibrief.dev</code></li>
+    <li>Set up email forwarding so <code>hello@yourdomain.com</code> → your Gmail (free on Namecheap)</li>
+  </ul>
+  <p><span class="pill green">Success</span> You own a domain and have a professional email.</p>
+</div>
+
+<div class="card info">
+  <h3>Block 4 — Polish your GitHub presence <em>(1 hour)</em></h3>
+  <ul class="checkbox-list">
+    <li>Repo → click ⚙️ next to "About" → add description, website URL, topics</li>
+    <li>Topics: <code>ai</code>, <code>newsletter</code>, <code>automation</code>, <code>gemini</code>, <code>github-actions</code>, <code>python</code></li>
+    <li>Pin the repo on your GitHub profile</li>
+    <li>Update your GitHub bio</li>
+    <li>Add the hero screenshot to the top of <code>README.md</code></li>
+  </ul>
+  <p><span class="pill green">Success</span> Your GitHub profile tells a clear story in 5 seconds.</p>
+</div>
+
+<h2>Sunday — Set Up the Audience Platform <small>(3 hours)</small></h2>
+
+<div class="card info">
+  <h3>Block 1 — Create the public newsletter <em>(1.5 hours)</em></h3>
+  <ul class="checkbox-list">
+    <li>Sign up for <strong>Beehiiv</strong> (free up to 2,500 subscribers)</li>
+    <li>Name it: "The Morning Stack" or "AI Before Coffee" or your own pick</li>
+    <li>Customize colors to match your GitHub README</li>
+    <li>Connect your custom domain</li>
+    <li>Write the welcome email — short, personal</li>
+  </ul>
+  <blockquote>
+    "Hey, I'm Siyas. Every morning I'll send you the most important AI news of the day.
+    I built the system that writes this — it's open source. Reply to this email any time."
+  </blockquote>
+</div>
+
+<div class="card info">
+  <h3>Block 2 — Connect your code to Beehiiv <em>(1 hour)</em></h3>
+  <ul class="checkbox-list">
+    <li>Read Beehiiv's API docs at <code>developers.beehiiv.com</code></li>
+    <li>In <code>tools/send_email.py</code>, add a function <code>publish_to_beehiiv()</code></li>
+    <li>Add <code>BEEHIIV_API_KEY</code> and <code>BEEHIIV_PUBLICATION_ID</code> to <code>.env</code> and GitHub Secrets</li>
+    <li>Test that one edition publishes correctly</li>
+  </ul>
+</div>
+
+<div class="card info">
+  <h3>Block 3 — Get your first 10 subscribers <em>(30 min)</em></h3>
+  <ul class="checkbox-list">
+    <li>Send the signup link to 10 specific friends — one personal message each</li>
+    <li>DO NOT mass-broadcast yet — you want feedback first</li>
+    <li>Ask each one: "Tell me one thing that would make you forward this"</li>
+  </ul>
+  <p><span class="pill green">Success</span> 10 subscribers, 5+ pieces of honest feedback.</p>
+</div>
+
+<h1 class="section">Weekend 2 — Public Launch</h1>
+<p><span class="pill purple">June 6–7</span> &nbsp; Maximum visibility across LinkedIn, Twitter, Reddit, and Hacker News.</p>
+
+<h2>Saturday — The LinkedIn Launch <small>(3 hours)</small></h2>
+
+<div class="card info">
+  <h3>Block 1 — Write your launch post</h3>
+  <pre><code>I built an AI that emails me the latest AI news every morning.
+It costs $0 to run.
+
+For the past few weeks I've been overwhelmed trying to keep up
+with AI developments. So I built a system that does it for me.
+
+Every morning at 11 AM, it:
+→ Researches the latest AI news (Gemini + Google Search)
+→ Writes a full newsletter with insights and analysis
+→ Generates a custom AI illustration
+→ Delivers it to my inbox
+
+The whole thing runs on free tiers:
+• Gemini 2.0 Flash (1,500 free requests/day)
+• Pollinations.ai (free unlimited images)
+• Gmail SMTP (free 500 emails/day)
+• GitHub Actions (free automation)
+
+I built it using the WAT framework — Workflows, Agents, Tools.
+The AI handles reasoning; Python handles execution.
+That separation is what keeps it reliable.
+
+Open-sourced it so anyone can fork and run their own.
+Link in comments.
+
+What would you automate next?
+
+#AI #Automation #OpenSource #Python #GeminiAPI #BuildInPublic</code></pre>
+  <ul class="checkbox-list">
+    <li>Post on <strong>Tuesday or Wednesday at 8:30 AM Riga time</strong> for max reach</li>
+    <li>First comment from your own account: GitHub link + Beehiiv signup link</li>
+    <li>Reply to every single comment in the first hour (algorithm boost)</li>
+  </ul>
+</div>
+
+<div class="card info">
+  <h3>Block 2 — Twitter/X thread</h3>
+  <p>Same content as 6 short tweets. Lead tweet:</p>
+  <blockquote>"I built an AI that emails me the latest AI news every morning. It costs $0 to run. Here's how it works 👇"</blockquote>
+</div>
+
+<div class="card info">
+  <h3>Block 3 — Reddit posts</h3>
+  <ul class="checkbox-list">
+    <li><code>r/SideProject</code> — "I built a free AI that emails me daily AI news"</li>
+    <li><code>r/Python</code> — "Built a $0/run daily AI newsletter — 5-step Python pipeline"</li>
+    <li><code>r/MachineLearning</code> — only in "Project" or weekly thread</li>
+    <li><code>r/learnmachinelearning</code> — focus on what you learned</li>
+  </ul>
+  <p><strong>Reddit etiquette:</strong> Don't just drop the link. Write 3-4 paragraphs explaining what you built, what was hard, what you learned. Link at the bottom.</p>
+</div>
+
+<h2>Sunday — Hacker News + Product Hunt <small>(2 hours)</small></h2>
+
+<div class="card info">
+  <h3>Hacker News (30 min)</h3>
+  <ul class="checkbox-list">
+    <li>Submit at <strong>8 AM Pacific Time</strong> (= 6 PM Riga time)</li>
+    <li>Title: <code>Show HN: AI newsletter that emails me every morning ($0/run)</code></li>
+    <li>First comment: short personal story of why you built it</li>
+    <li>If you hit front page → reply to every comment within an hour</li>
+  </ul>
+</div>
+
+<div class="card info">
+  <h3>Product Hunt prep (30 min)</h3>
+  <ul class="checkbox-list">
+    <li>Create a Product Hunt account</li>
+    <li>Post on Twitter: "Launching on PH next Tuesday — would love your support"</li>
+    <li>Get 5 friends to commit to "hunting" / upvoting on launch day</li>
+    <li>Prepare: logo, 3 screenshots, GIF demo, one-line tagline</li>
+  </ul>
+</div>
+
+<div class="card info">
+  <h3>Long-form blog post (1 hour)</h3>
+  <p>Title: <strong>"How I built a self-running AI newsletter for free"</strong></p>
+  <p>Cross-post to Dev.to, Hashnode, Medium, and your own Beehiiv as a special edition.</p>
+</div>
+
+<h1 class="section">Week 3 — First Income</h1>
+<p><span class="pill purple">June 8–14</span> &nbsp; Secure your first paid consulting client.</p>
+
+<h2>Cold Email Campaign for Consulting</h2>
+
+<div class="card info">
+  <h3>Day 1 — Build your target list (1 hour)</h3>
+  <p>Find 20 Latvian/Baltic companies that would benefit from AI automation:</p>
+  <ul class="checkbox-list">
+    <li>Real estate agencies — need market reports</li>
+    <li>Law firms — need legal news digests</li>
+    <li>Marketing agencies — need competitor monitoring</li>
+    <li>E-commerce stores — need trend tracking</li>
+    <li>Recruitment agencies — need talent market summaries</li>
+  </ul>
+  <p><strong>Tools:</strong> LinkedIn Sales Navigator (free 30-day trial), Apollo.io (free 50 credits), Google Maps + their websites.</p>
+</div>
+
+<div class="card info">
+  <h3>Day 2 — Send 10 cold emails (1 hour)</h3>
+  <pre><code>Subject: A daily AI briefing for [Company Name] — built in a weekend
+
+Hi [Name],
+
+I noticed [specific thing about their business — read their About page].
+
+I recently built an AI system that researches a topic each morning,
+writes a polished briefing, and emails it to a team. It runs $0/month.
+
+I'd like to offer to build a custom version for [Company Name]:
+• "Daily competitor watch" — what your top 5 competitors did yesterday
+• "Industry pulse" — top 5 news stories in [their industry] each morning
+• "Market intel" — daily summary of [their market]
+
+15-min call this week to see if it fits?
+
+Best,
+Siyas
+Student at RTU, building AI automation
+github.com/Siyaslwf/ai-morning-briefing</code></pre>
+
+  <h4>Pricing structure</h4>
+  <table>
+    <tr><th>Tier</th><th>Price</th><th>What's included</th></tr>
+    <tr><td>Starter</td><td>€500</td><td>1 custom newsletter, fully set up</td></tr>
+    <tr><td>Bundle</td><td>€1,500</td><td>3 newsletters + team training</td></tr>
+    <tr><td>Retainer</td><td>€3,000/yr</td><td>Monthly maintenance + 4 newsletters</td></tr>
+  </table>
+</div>
+
+<div class="card info">
+  <h3>Day 3-5 — Follow up + take calls (2 hrs/day)</h3>
+  <ul class="checkbox-list">
+    <li>Follow up after 3 days if no reply (1 line: "bumping this in case it got buried")</li>
+    <li>Take every call seriously, even if they say "not now"</li>
+    <li>After each call, ask: "Do you know anyone else who could use this?"</li>
+  </ul>
+  <p><span class="pill green">Success</span> 1 paid client by end of week 3.</p>
+</div>
+
+<h1 class="section">Week 4 — Build the Hosted Version</h1>
+<p><span class="pill purple">June 15–21</span> &nbsp; A landing page where strangers can sign up and pay without you doing manual work.</p>
+
+<div class="card info">
+  <h3>Tech stack</h3>
+  <table>
+    <tr><th>Layer</th><th>Tool</th><th>Cost</th></tr>
+    <tr><td>Hosting</td><td>Vercel</td><td>Free</td></tr>
+    <tr><td>Frontend</td><td>Next.js or plain HTML/CSS</td><td>Free</td></tr>
+    <tr><td>Database</td><td>Supabase</td><td>Free up to 500 MB</td></tr>
+    <tr><td>Payments</td><td>Stripe</td><td>No monthly fee, 1.4% + 25¢ per txn</td></tr>
+  </table>
+</div>
+
+<div class="card info">
+  <h3>Pricing tiers</h3>
+  <table>
+    <tr><th>Tier</th><th>Price</th><th>Features</th></tr>
+    <tr><td>Free</td><td>$0</td><td>1 topic, 3x/week</td></tr>
+    <tr><td>Pro</td><td>$5/mo</td><td>Daily, 3 topics, custom delivery time</td></tr>
+    <tr><td>Team</td><td>$15/mo</td><td>Daily, unlimited topics, team distribution</td></tr>
+  </table>
+  <p><span class="pill green">Success</span> 5 paying users by end of week 4 ($25/mo recurring).</p>
+</div>
+
+<h1 class="section">Month 2 — Audience Growth</h1>
+<p><span class="pill purple">June 22 – July 22</span> &nbsp; Compound your output with consistent content.</p>
+
+<h3>Weekly rhythm</h3>
+<table>
+  <tr><th>Day</th><th>Activity</th><th>Time</th></tr>
+  <tr><td>Mon</td><td>Send daily newsletter</td><td>Auto</td></tr>
+  <tr><td>Tue</td><td>LinkedIn post about a feature you built</td><td>30 min</td></tr>
+  <tr><td>Wed</td><td>Reply to comments, engage with others' posts</td><td>30 min</td></tr>
+  <tr><td>Thu</td><td>Twitter thread on AI</td><td>30 min</td></tr>
+  <tr><td>Fri</td><td>Reach out to 10 new prospects</td><td>1 hr</td></tr>
+  <tr><td>Sat</td><td>Write a long-form blog post</td><td>2 hrs</td></tr>
+  <tr><td>Sun</td><td>Plan next week's content</td><td>30 min</td></tr>
+</table>
+
+<h3>Content ideas (one per week)</h3>
+<ul class="checkbox-list">
+  <li>"I just hit 100 subscribers — here's what I learned"</li>
+  <li>"The 5 prompts I use to make my AI newsletter not suck"</li>
+  <li>"Cost breakdown: running a daily AI service for $0"</li>
+  <li>"How I added [feature] to my AI newsletter in 2 hours"</li>
+  <li>"I asked AI to write a newsletter about itself — here's what happened"</li>
+</ul>
+
+<h3>Directories & submissions</h3>
+<ul class="checkbox-list">
+  <li>Awesome AI Agents (GitHub) — submit PR</li>
+  <li>Awesome Newsletters (GitHub) — submit PR</li>
+  <li>AlternativeTo — add as alternative to Morning Brew</li>
+  <li>BetaList — list your product</li>
+  <li>Indie Hackers Products — add yours</li>
+</ul>
+
+<p><span class="pill green">Success by end of Month 2</span> 100 subscribers · 10 paying users ($50/mo) · 1,000 LinkedIn followers</p>
+
+<h1 class="section">Month 3 — Compound Growth</h1>
+<p><span class="pill purple">July 23 – Aug 22</span> &nbsp; Scale audience, monetization, and career leverage.</p>
+
+<h2>Career leverage</h2>
+
+<div class="card info">
+  <h3>Update your professional presence</h3>
+  <ul class="checkbox-list">
+    <li>LinkedIn headline: "Computer Engineering Student @ RTU | Building AI Automation Tools | Creator of Morning Stack"</li>
+    <li>Featured section: pin GitHub repo + Beehiiv newsletter</li>
+    <li>About section: tell the story of building this</li>
+    <li>Add project with metrics ("X subscribers, Y paying users")</li>
+  </ul>
+</div>
+
+<div class="card info">
+  <h3>CV updates — top of CV under "Projects"</h3>
+  <pre><code>AI Morning Briefing — Self-running AI newsletter system
+• Built end-to-end automation: research → writing → image → delivery
+• Runs daily at $0 operational cost via free-tier APIs and GitHub Actions
+• [X] active subscribers, [X] paying customers, [X] GitHub stars
+• Stack: Python, Gemini API, Jinja2, SMTP, GitHub Actions</code></pre>
+</div>
+
+<div class="card info">
+  <h3>Apply to opportunities</h3>
+  <ul class="checkbox-list">
+    <li>Paid internships: Anthropic, OpenRouter, Pollinations, Mintos, Printify, Lokalise</li>
+    <li>Y Combinator Startup School (free, online)</li>
+    <li>European AI/ML grants and competitions</li>
+    <li>RTU's startup incubator if available</li>
+  </ul>
+</div>
+
+<h2>Monetization upgrades</h2>
+<ul class="checkbox-list">
+  <li>Newsletter sponsorships (€100-300/issue once 500+ subscribers)</li>
+  <li>Affiliate links — recommend AI tools, earn commission</li>
+  <li>Premium tier — exclusive deep-dives at $20/mo</li>
+</ul>
+
+<p><span class="pill green">Success by end of Month 3</span> 500 subscribers · 30 paying users ($150/mo recurring) · 1+ paid consulting client at €500-1500</p>
+
+<h1 class="section">Tools & Resources</h1>
+
+<table>
+  <tr><th>Purpose</th><th>Tool</th><th>Cost</th></tr>
+  <tr><td>Code hosting</td><td>GitHub</td><td>Free</td></tr>
+  <tr><td>Automation</td><td>GitHub Actions</td><td>Free (2,000 min/mo)</td></tr>
+  <tr><td>AI research</td><td>Gemini API</td><td>Free (1,500 req/day)</td></tr>
+  <tr><td>AI images</td><td>Pollinations.ai</td><td>Free, unlimited</td></tr>
+  <tr><td>Email sending</td><td>Gmail SMTP</td><td>Free (500/day)</td></tr>
+  <tr><td>Newsletter platform</td><td>Beehiiv</td><td>Free up to 2,500 subs</td></tr>
+  <tr><td>Web hosting</td><td>Vercel</td><td>Free</td></tr>
+  <tr><td>Database</td><td>Supabase</td><td>Free up to 500 MB</td></tr>
+  <tr><td>Payments</td><td>Stripe</td><td>Free + 1.4% per txn</td></tr>
+  <tr><td>Cold email finder</td><td>Apollo.io</td><td>Free 50 credits/mo</td></tr>
+  <tr><td>Design</td><td>Canva</td><td>Free</td></tr>
+  <tr><td>Analytics</td><td>Plausible / Vercel Analytics</td><td>$9/mo or free</td></tr>
+  <tr><td>Domain</td><td>Namecheap</td><td>~$10/year</td></tr>
+</table>
+
+<h2>Books to read (in this order)</h2>
+<ol>
+  <li><strong>The Mom Test</strong> — Rob Fitzpatrick. How to validate without lying to yourself.</li>
+  <li><strong>Show Your Work</strong> — Austin Kleon. Build an audience by being open.</li>
+  <li><strong>The Lean Startup</strong> — Eric Ries. Ship fast, learn faster.</li>
+  <li><strong>Make</strong> — Pieter Levels. Solo indie hacker playbook.</li>
+</ol>
+
+<h2>People to follow</h2>
+<ul>
+  <li><strong>Pieter Levels</strong> (@levelsio) — solo founder, $200k/mo, no team</li>
+  <li><strong>Marc Lou</strong> (@marc_louvion) — ships products fast</li>
+  <li><strong>Tony Dinh</strong> (@tdinh_me) — indie maker</li>
+  <li><strong>Daniel Vassallo</strong> (@dvassallo) — portfolio of small bets</li>
+</ul>
+
+<h1 class="section">Common Pitfalls — Avoid These</h1>
+
+<div class="card danger">
+  <h3>❌ Spending 3 weeks improving the code before launching</h3>
+  <p>The current version is good enough. Ship it.</p>
+</div>
+
+<div class="card danger">
+  <h3>❌ Building features no one asked for</h3>
+  <p>Talk to users first. Build second.</p>
+</div>
+
+<div class="card danger">
+  <h3>❌ Trying to do everything at once</h3>
+  <p>Pick one channel (LinkedIn or Twitter or Reddit) and go deep before adding more.</p>
+</div>
+
+<div class="card danger">
+  <h3>❌ Underpricing</h3>
+  <p>If a real estate agency wants this, €500 is cheap for them. Don't charge €50.</p>
+</div>
+
+<div class="card danger">
+  <h3>❌ Going silent for 2 weeks then posting one update</h3>
+  <p>Consistency &gt; intensity. 1 post every Tuesday &gt; 10 posts in one day then nothing.</p>
+</div>
+
+<div class="card danger">
+  <h3>❌ Comparing yourself to people 5 years ahead of you</h3>
+  <p>You're 1 week into this. Compare yourself to where you were last month.</p>
+</div>
+
+<h1 class="section">Daily Check-In Template</h1>
+
+<div class="card success">
+  <p>Use this 5-minute end-of-day journal:</p>
+  <pre><code>Date: __________
+
+Today I shipped: __________
+Today I learned: __________
+One thing I'm proud of: __________
+Tomorrow's #1 priority: __________
+Blocker (if any): __________</code></pre>
+  <p>Saving these gives you content for "what I learned" posts later.</p>
+</div>
+
+<h1 class="section">The Real Goal</h1>
+
+<div class="card danger">
+  <h3>Don't measure success by</h3>
+  <ul>
+    <li>GitHub stars</li>
+    <li>LinkedIn likes</li>
+    <li>Twitter followers</li>
+  </ul>
+</div>
+
+<div class="card success">
+  <h3>Measure success by</h3>
+  <ul>
+    <li>Paying users (even 1 = proof)</li>
+    <li>A real audience that opens your emails (&gt;40% open rate)</li>
+    <li>Concrete skills you can demonstrate in any job interview</li>
+    <li>The momentum to ship the next thing faster</li>
+  </ul>
+</div>
+
+<div class="footer">
+  <h2>You've already done the hardest part.</h2>
+  <p>You built the system. Everything from here is distribution and iteration.</p>
+  <p style="margin-top: 30px; font-size: 18px;"><strong>Print this. Stick it on your wall.</strong></p>
+  <p style="font-size: 14px; opacity: 0.7;">The next 90 days will compound for the next 10 years.</p>
+  <p style="margin-top: 24px; font-size: 22px; font-weight: 700; color: #a5b4fc;">— Start now. —</p>
+</div>
+
+</body>
+</html>

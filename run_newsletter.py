@@ -33,6 +33,7 @@ from tools.generate_content import generate_content
 from tools.generate_infographic import generate_infographic
 from tools.generate_html import generate_html
 from tools.send_email import send_email
+from tools.beehiiv_publish import publish_to_beehiiv
 
 ENV_PATH = Path(__file__).parent / ".env"
 TMP_DIR  = Path(__file__).parent / ".tmp"
@@ -138,6 +139,22 @@ def run(topic: str, recipients: list[str], dry_run: bool, issue_number: int) -> 
     else:
         log("ERROR", f"Send failed: {result['error']}")
         sys.exit(1)
+
+    # ── Step 6 (optional): Publish to Beehiiv ─────────────────────────────────
+    if os.getenv("BEEHIIV_API_KEY") and os.getenv("BEEHIIV_PUBLICATION_ID"):
+        log("6/6", "Publishing to Beehiiv public newsletter...")
+        t0 = time.time()
+        bh_send = os.getenv("BEEHIIV_SEND_LIVE", "false").lower() == "true"
+        bh = publish_to_beehiiv(html, content, send=bh_send)
+        if bh["success"]:
+            mode = "SENT to subscribers" if bh_send else "saved as DRAFT"
+            log("6/6", f"Beehiiv {mode} ({time.time()-t0:.1f}s)")
+            if bh.get("web_url"):
+                print(f"  Public URL: {bh['web_url']}")
+        else:
+            log("WARN", f"Beehiiv publish failed (non-blocking): {bh['error']}")
+    else:
+        log("6/6", "Beehiiv not configured (set BEEHIIV_API_KEY + BEEHIIV_PUBLICATION_ID to enable)")
 
     print()
     print("Done.")
