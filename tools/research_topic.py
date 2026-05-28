@@ -115,9 +115,10 @@ Return a JSON object with exactly these keys:
   "cta": "Ask readers to reply with how they are using this AI in their work or business"
 }}"""
 
+    models = _research_models()
     raw = None
     last_error = None
-    for model in _research_models():
+    for model in models:
         model_succeeded = False
         for attempt in range(MAX_RETRIES_PER_MODEL):
             try:
@@ -139,7 +140,7 @@ Return a JSON object with exactly these keys:
                     print(f"[research] Exhausted retries for {model} — moving to next model...")
                     break
                 wait = BASE_RATE_LIMIT_WAIT_SECONDS * (attempt + 1)
-                print(f"[research] Rate limited on {model} — retrying in {wait}s (attempt {attempt+1}/{MAX_RETRIES_PER_MODEL})...")
+                print(f"[research] Rate limited on {model} — retrying in {wait}s (attempt {attempt + 1}/{MAX_RETRIES_PER_MODEL})...")
                 time.sleep(wait)
             except Exception as exc:
                 last_error = exc
@@ -148,7 +149,7 @@ Return a JSON object with exactly these keys:
         if model_succeeded:
             break
     else:
-        raise RuntimeError(f"All research models failed: {_research_models()}") from last_error
+        raise RuntimeError(f"All research models failed: {models}") from last_error
 
     # Strip markdown code fences if model adds them despite instructions
     if raw.startswith("```"):

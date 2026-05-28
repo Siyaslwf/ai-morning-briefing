@@ -112,9 +112,10 @@ Return a JSON object with EXACTLY these keys:
   "preview_text": "Preview text (max 90 chars) — complements the subject"
 }}"""
 
+    models = _content_models()
     raw = None
     last_error = None
-    for model in _content_models():
+    for model in models:
         model_succeeded = False
         for attempt in range(MAX_RETRIES_PER_MODEL):
             try:
@@ -136,7 +137,7 @@ Return a JSON object with EXACTLY these keys:
                     print(f"[content] Exhausted retries for {model} — moving to next model...")
                     break
                 wait = BASE_RATE_LIMIT_WAIT_SECONDS * (attempt + 1)
-                print(f"[content] Rate limited on {model} — retrying in {wait}s (attempt {attempt+1}/{MAX_RETRIES_PER_MODEL})...")
+                print(f"[content] Rate limited on {model} — retrying in {wait}s (attempt {attempt + 1}/{MAX_RETRIES_PER_MODEL})...")
                 time.sleep(wait)
             except Exception as exc:
                 last_error = exc
@@ -145,7 +146,7 @@ Return a JSON object with EXACTLY these keys:
         if model_succeeded:
             break
     else:
-        raise RuntimeError(f"All content models failed: {_content_models()}") from last_error
+        raise RuntimeError(f"All content models failed: {models}") from last_error
 
     if raw.startswith("```"):
         raw = raw.split("```")[1]
