@@ -136,7 +136,7 @@ Return a JSON object with exactly these keys:
                 last_error = exc
                 if attempt == MAX_RETRIES_PER_MODEL - 1:
                     print(f"[research] Model rate-limited after retries: {model} — trying fallback model...")
-                    continue
+                    break
                 wait = 15 * (attempt + 1)
                 print(f"[research] Rate limited on {model} — retrying in {wait}s (attempt {attempt+1}/{MAX_RETRIES_PER_MODEL})...")
                 time.sleep(wait)
@@ -144,7 +144,7 @@ Return a JSON object with exactly these keys:
                 last_error = exc
                 print(f"[research] Model failed: {model} — {exc} — trying fallback model...")
                 break
-        if model_succeeded and raw is not None:
+        if model_succeeded:
             break
     else:
         raise RuntimeError(f"All research models failed: {_research_models()}") from last_error
