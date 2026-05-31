@@ -37,6 +37,10 @@ jobs:
 
       - name: Run newsletter
         # Change --topic to whatever you want, or pass a dynamic topic
+        env:
+          # Stream stdout/stderr live to the Actions log instead of buffering
+          PYTHONUNBUFFERED: "1"
+          PYTHONIOENCODING: "utf-8"
         run: python run_newsletter.py --topic "Latest AI developments and tools this week"
 
       - name: Upload HTML preview as artifact

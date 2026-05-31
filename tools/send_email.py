@@ -6,9 +6,9 @@ Includes a plain-text fallback auto-derived from the content dict.
 import os
 import smtplib
 import sys
+import time
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from textwrap import dedent
 
 from dotenv import load_dotenv
 
@@ -101,30 +101,43 @@ def send_email(
     msg.attach(MIMEText(plain_text, "plain", "utf-8"))
     msg.attach(MIMEText(html, "html", "utf-8"))
 
-    try:
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            server.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
-            server.sendmail(GMAIL_ADDRESS, recipients, msg.as_string())
+    # Retry on transient SMTP errors (network blips, Gmail server flaps).
+    # Auth errors are NOT retried — the credentials are wrong, retrying won't help.
+    last_error: str | None = None
+    for attempt in range(3):
+        try:
+            with smtplib.SMTP("smtp.gmail.com", 587, timeout=30) as server:
+                server.ehlo()
+                server.starttls()
+                server.ehlo()
+                server.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
+                server.sendmail(GMAIL_ADDRESS, recipients, msg.as_string())
 
-        print(f"[email] Sent to {len(recipients)} recipient(s): {', '.join(recipients)}")
-        return {"success": True, "sent_to": recipients, "error": None}
+            print(f"[email] Sent to {len(recipients)} recipient(s): {', '.join(recipients)}")
+            return {"success": True, "sent_to": recipients, "error": None}
 
-    except smtplib.SMTPAuthenticationError:
-        error = (
-            "Gmail authentication failed. Make sure you're using an App Password "
-            "(not your account password). Generate one at: "
-            "myaccount.google.com/apppasswords"
-        )
-        print(f"[email] ERROR: {error}")
-        return {"success": False, "sent_to": [], "error": error}
+        except smtplib.SMTPAuthenticationError:
+            error = (
+                "Gmail authentication failed. Make sure you're using an App Password "
+                "(not your account password). Generate one at: "
+                "myaccount.google.com/apppasswords"
+            )
+            print(f"[email] ERROR (no retry): {error}")
+            return {"success": False, "sent_to": [], "error": error}
 
-    except Exception as exc:
-        error = str(exc)
-        print(f"[email] ERROR: {error}")
-        return {"success": False, "sent_to": [], "error": error}
+        except (smtplib.SMTPServerDisconnected, smtplib.SMTPConnectError,
+                smtplib.SMTPHeloError, TimeoutError, OSError) as exc:
+            last_error = f"{type(exc).__name__}: {exc}"
+            wait = 5 * (attempt + 1)
+            print(f"[email] Transient error (attempt {attempt+1}/3): {last_error} — retrying in {wait}s")
+            time.sleep(wait)
+
+        except Exception as exc:
+            last_error = str(exc)
+            print(f"[email] ERROR: {last_error}")
+            return {"success": False, "sent_to": [], "error": last_error}
+
+    return {"success": False, "sent_to": [], "error": f"SMTP failed after 3 attempts: {last_error}"}
 
 
 if __name__ == "__main__":

@@ -41,10 +41,31 @@ TMP_DIR  = Path(__file__).parent / ".tmp"
 
 def log(step: str, msg: str) -> None:
     ts = datetime.now().strftime("%H:%M:%S")
-    print(f"[{ts}] [{step.upper()}] {msg}")
+    print(f"[{ts}] [{step.upper()}] {msg}", flush=True)
+
+
+REQUIRED_SECRETS = ("OPENROUTER_API_KEY", "GMAIL_ADDRESS", "GMAIL_APP_PASSWORD")
+
+
+def _preflight(dry_run: bool, recipients: list[str]) -> None:
+    """Fail fast with a clear message if anything required is missing."""
+    missing = [k for k in REQUIRED_SECRETS if not os.getenv(k)]
+    if not dry_run and not recipients:
+        missing.append("NEWSLETTER_RECIPIENTS (or --recipients)")
+    if missing:
+        print("ERROR: Missing required configuration:", file=sys.stderr)
+        for k in missing:
+            print(f"  - {k}", file=sys.stderr)
+        print(
+            "\nFor GitHub Actions: set these as repository secrets at "
+            "Settings -> Secrets and variables -> Actions.",
+            file=sys.stderr,
+        )
+        sys.exit(2)
 
 
 def run(topic: str, recipients: list[str], dry_run: bool, issue_number: int) -> None:
+    _preflight(dry_run, recipients)
     date = datetime.now().strftime("%B %d, %Y")
     print()
     print("=" * 60)
