@@ -119,9 +119,15 @@ def _build_stat_chart(stats: list[dict]) -> str | None:
     if not stats:
         return None
 
-    labels = [s.get("label", "")[:30] for s in stats]
-    contexts = [s.get("context", "") for s in stats]
-    raw_values = [s.get("value", "0") for s in stats]
+    # matplotlib mathtext treats $...$ specially; disable it (rcParam added in MPL 3.5)
+    try:
+        plt.rcParams["text.parse_math"] = False
+    except KeyError:
+        pass
+
+    labels = [str(s.get("label", ""))[:30] for s in stats]
+    contexts = [str(s.get("context", "")) for s in stats]
+    raw_values = [str(s.get("value", "0")) for s in stats]
 
     # Try to parse numeric values; fall back to index-based sizing
     numeric = []
@@ -198,9 +204,13 @@ def generate_infographic(research: dict) -> dict:
     chart_b64 = None
     if stats:
         print(f"[infographic] Generating stat chart ({len(stats)} data points)...")
-        chart_b64 = _build_stat_chart(stats)
-        if chart_b64:
-            print("[infographic] Stat chart generated successfully")
+        try:
+            chart_b64 = _build_stat_chart(stats)
+            if chart_b64:
+                print("[infographic] Stat chart generated successfully")
+        except Exception as exc:
+            print(f"[infographic] Stat chart failed (continuing): {type(exc).__name__}: {exc}")
+            chart_b64 = None
 
     return {"illustration_b64": illustration_b64, "chart_b64": chart_b64}
 

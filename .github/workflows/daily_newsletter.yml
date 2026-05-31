@@ -31,6 +31,9 @@ jobs:
           echo "GMAIL_APP_PASSWORD=${{ secrets.GMAIL_APP_PASSWORD }}" >> .env
           echo "NEWSLETTER_RECIPIENTS=${{ secrets.NEWSLETTER_RECIPIENTS }}" >> .env
           echo "NEWSLETTER_ISSUE_NUMBER=${{ secrets.NEWSLETTER_ISSUE_NUMBER || '1' }}" >> .env
+          echo "BEEHIIV_API_KEY=${{ secrets.BEEHIIV_API_KEY }}" >> .env
+          echo "BEEHIIV_PUBLICATION_ID=${{ secrets.BEEHIIV_PUBLICATION_ID }}" >> .env
+          echo "BEEHIIV_SEND_LIVE=${{ secrets.BEEHIIV_SEND_LIVE || 'false' }}" >> .env
 
       - name: Run newsletter
         # Change --topic to whatever you want, or pass a dynamic topic

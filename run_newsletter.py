@@ -57,24 +57,34 @@ def run(topic: str, recipients: list[str], dry_run: bool, issue_number: int) -> 
     print()
 
     # ── Step 1: Research ──────────────────────────────────────────────────────
-    log("1/5", f"Researching topic via Perplexity API...")
+    log("1/5", "Researching topic via OpenRouter free models...")
     t0 = time.time()
     try:
         research = research_topic(topic)
     except Exception as exc:
-        log("ERROR", f"Research failed: {exc}")
+        import traceback
+        log("ERROR", f"Research failed: {type(exc).__name__}: {exc}")
+        traceback.print_exc()
         sys.exit(1)
     log("1/5", f"Research complete ({time.time()-t0:.1f}s)")
     log("1/5", "Validating URLs in research...")
     research = validate_links(research)
 
     # ── Step 2: Generate content ──────────────────────────────────────────────
-    log("2/5", "Writing newsletter copy via Claude API...")
+    log("2/5", "Writing newsletter copy via OpenRouter free models...")
     t0 = time.time()
     try:
         content = generate_content(research, issue_number=issue_number, date=date)
     except Exception as exc:
-        log("ERROR", f"Content generation failed: {exc}")
+        import traceback
+        log("ERROR", f"Content generation failed: {type(exc).__name__}: {exc}")
+        traceback.print_exc()
+        # Save the research so we can debug from the artifact
+        TMP_DIR.mkdir(exist_ok=True)
+        (TMP_DIR / f"newsletter_FAILED_research_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html").write_text(
+            f"<pre>Content generation failed.\nResearch was:\n{json.dumps(research, indent=2)}</pre>",
+            encoding="utf-8",
+        )
         sys.exit(1)
     log("2/5", f"Content written ({time.time()-t0:.1f}s) — headline: \"{content.get('headline')}\"")
 

@@ -1,36 +1,20 @@
 """
-Researches a newsletter topic via OpenRouter using perplexity/sonar-pro,
-which has built-in real-time web search grounding.
+Researches a newsletter topic via OpenRouter free models with fallback chain.
 Returns structured JSON with insights, stats, sources, and tool mentions.
 """
 
 import json
-import os
-import re
 import sys
-import time
 from datetime import datetime
 from pathlib import Path
 
-from dotenv import load_dotenv
-from openai import OpenAI, RateLimitError
+from tools.llm_client import chat_json
 
-load_dotenv()
-
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 TMP_DIR = Path(__file__).parent.parent / ".tmp"
 
 
 def research_topic(topic: str) -> dict:
-    if not OPENROUTER_API_KEY:
-        raise ValueError("OPENROUTER_API_KEY not set in .env")
-
     TMP_DIR.mkdir(exist_ok=True)
-
-    client = OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=OPENROUTER_API_KEY,
-    )
 
     system_instruction = (
         "You are a senior AI journalist and practical-income researcher. "
@@ -105,39 +89,7 @@ Return a JSON object with exactly these keys:
   "cta": "Ask readers to reply with how they are using this AI in their work or business"
 }}"""
 
-    for attempt in range(4):
-        try:
-            response = client.chat.completions.create(
-                model="deepseek/deepseek-v4-flash:free",
-                messages=[
-                    {"role": "system", "content": system_instruction},
-                    {"role": "user", "content": user_prompt},
-                ],
-                temperature=0.2,
-            )
-            break
-        except RateLimitError:
-            if attempt == 3:
-                raise
-            wait = 30 * (attempt + 1)
-            print(f"[research] Rate limited — retrying in {wait}s (attempt {attempt+1}/3)...")
-            time.sleep(wait)
-
-    raw = response.choices[0].message.content.strip()
-
-    # Strip markdown code fences if model adds them despite instructions
-    if raw.startswith("```"):
-        raw = raw.split("```")[1]
-        if raw.startswith("json"):
-            raw = raw[4:]
-        raw = raw.strip()
-    if raw.endswith("```"):
-        raw = raw[: raw.rfind("```")].strip()
-
-    # Remove trailing commas before ] or } (common model output mistake)
-    raw = re.sub(r",\s*([}\]])", r"\1", raw)
-
-    research = json.loads(raw)
+    research = chat_json(system_instruction, user_prompt, temperature=0.2)
 
     output_path = TMP_DIR / f"research_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
     output_path.write_text(json.dumps(research, indent=2), encoding="utf-8")

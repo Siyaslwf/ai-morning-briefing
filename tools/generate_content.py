@@ -1,36 +1,19 @@
 """
-Takes research JSON and uses google/gemini-2.5-pro via OpenRouter to produce
-polished newsletter copy for every text tag in the template.
+Takes research JSON and produces polished newsletter copy via the shared
+LLM client (free OpenRouter models with fallback chain).
 """
 
 import json
-import os
-import re
-import sys
-import time
 from datetime import datetime
 
-from dotenv import load_dotenv
-from openai import OpenAI, RateLimitError
-
-load_dotenv()
-
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+from tools.llm_client import chat_json
 
 
 def generate_content(research: dict, issue_number: int, date: str | None = None) -> dict:
-    if not OPENROUTER_API_KEY:
-        raise ValueError("OPENROUTER_API_KEY not set in .env")
-
     if date is None:
         date = datetime.now().strftime("%B %d, %Y")
 
     topic = research.get("topic", "AI & Technology")
-
-    client = OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=OPENROUTER_API_KEY,
-    )
 
     system_instruction = (
         "You are a newsletter writer for a practical AI publication. "
@@ -102,37 +85,7 @@ Return a JSON object with EXACTLY these keys:
   "preview_text": "Preview text (max 90 chars) — complements the subject"
 }}"""
 
-    for attempt in range(4):
-        try:
-            response = client.chat.completions.create(
-                model="deepseek/deepseek-v4-flash:free",
-                messages=[
-                    {"role": "system", "content": system_instruction},
-                    {"role": "user", "content": prompt},
-                ],
-                temperature=0.7,
-            )
-            break
-        except RateLimitError:
-            if attempt == 3:
-                raise
-            wait = 30 * (attempt + 1)
-            print(f"[content] Rate limited — retrying in {wait}s (attempt {attempt+1}/3)...")
-            time.sleep(wait)
-
-    raw = response.choices[0].message.content.strip()
-    if raw.startswith("```"):
-        raw = raw.split("```")[1]
-        if raw.startswith("json"):
-            raw = raw[4:]
-        raw = raw.strip()
-    if raw.endswith("```"):
-        raw = raw[: raw.rfind("```")].strip()
-
-    # Remove trailing commas before ] or } (common model output mistake)
-    raw = re.sub(r",\s*([}\]])", r"\1", raw)
-
-    content = json.loads(raw)
+    content = chat_json(system_instruction, prompt, temperature=0.7)
     print(f"[content] Generated newsletter copy for issue #{issue_number}")
     return content
 

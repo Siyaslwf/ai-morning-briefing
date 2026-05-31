@@ -37,7 +37,7 @@ def _fix_url(url: str) -> str:
     if _is_reachable(url):
         return url
     home = _homepage(url)
-    print(f"[links] Broken: {url} → using homepage: {home}")
+    print(f"[links] Broken: {url} -> using homepage: {home}")
     return home
 
 
